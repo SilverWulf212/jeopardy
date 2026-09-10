@@ -1,0 +1,18 @@
+# Singular self-hosted image: builds web, serves via API + Postgres.
+# Uses node:20-alpine (widely cached) + tsx to run the TS API directly.
+FROM node:20.19-alpine AS webbuild
+WORKDIR /web
+COPY web/package.json ./
+RUN npm install
+COPY web/ ./
+RUN npm run build
+
+FROM node:20.19-alpine AS app
+WORKDIR /app
+COPY api/package.json ./
+RUN npm install --omit=dev
+COPY api/ ./
+COPY --from=webbuild /web/dist ./public
+ENV NODE_ENV=production PORT=3001
+EXPOSE 3001
+CMD ["npx", "tsx", "src/index.ts"]
