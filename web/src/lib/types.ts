@@ -4,6 +4,7 @@ export interface Category {
   id: string;
   title: string;
   description: string;
+  tags: string[];
   round?: Round;
   position?: number;
 }

@@ -16,6 +16,7 @@ app.use(express.json({ limit: "1mb" }));
 const CategorySchema = z.object({
   title: z.string().min(1).max(120),
   description: z.string().max(500).optional().default(""),
+  tags: z.array(z.string().min(1).max(40)).max(10).optional().default([]),
 });
 const ClueSchema = z.object({
   category_id: z.string().uuid(),
@@ -27,14 +28,28 @@ const ClueSchema = z.object({
 });
 const BoardSchema = z.object({
   name: z.string().min(1).max(120),
-  jeopardy: z.array(z.string().uuid()).length(6).optional(),
-  double: z.array(z.string().uuid()).length(6).optional(),
+  description: z.string().max(500).optional().default(""),
+  tags: z.array(z.string().min(1).max(40)).max(10).optional().default([]),
+  jeopardy: z.array(z.string().uuid()).max(6).optional(),
+  double: z.array(z.string().uuid()).max(6).optional(),
   final: z.string().uuid().optional(),
 });
 
 function asyncHandler(fn: any) {
   return (req: any, res: any, next: any) => Promise.resolve(fn(req, res, next)).catch(next);
 }
+
+function normTags(tags: string[] | undefined): string[] {
+  return [...new Set((tags ?? []).map((t) => t.trim().toLowerCase()).filter(Boolean))];
+}
+
+app.get("/api/tags", asyncHandler(async (_req: any, res: any) => {
+  const rows = await query<{ tag: string }>(
+    `SELECT DISTINCT unnest(tags) AS tag FROM categories WHERE tags <> '{}'
+     UNION SELECT DISTINCT unnest(tags) FROM boards WHERE tags <> '{}' ORDER BY 1`
+  );
+  res.json(rows.map((r) => r.tag));
+}));
 
 // ---------- health ----------
 app.get("/api/health", asyncHandler(async (_req: any, res: any) => {
@@ -43,23 +58,29 @@ app.get("/api/health", asyncHandler(async (_req: any, res: any) => {
 }));
 
 // ---------- categories ----------
-app.get("/api/categories", asyncHandler(async (_req: any, res: any) => {
-  const rows = await query("SELECT * FROM categories ORDER BY title ASC");
+app.get("/api/categories", asyncHandler(async (req: any, res: any) => {
+  const { tag, q } = req.query as Record<string, string>;
+  const conds: string[] = [];
+  const params: any[] = [];
+  if (tag) { params.push(tag.toLowerCase()); conds.push(`$${params.length} = ANY(tags)`); }
+  if (q) { params.push(`%${q}%`); conds.push(`title ILIKE $${params.length}`); }
+  const where = conds.length ? `WHERE ${conds.join(" AND ")}` : "";
+  const rows = await query(`SELECT * FROM categories ${where} ORDER BY title ASC`, params);
   res.json(rows);
 }));
 app.post("/api/categories", asyncHandler(async (req: any, res: any) => {
   const body = CategorySchema.parse(req.body);
   const rows = await query(
-    "INSERT INTO categories (title, description) VALUES ($1,$2) RETURNING *",
-    [body.title, body.description]
+    "INSERT INTO categories (title, description, tags) VALUES ($1,$2,$3) RETURNING *",
+    [body.title, body.description, normTags(body.tags)]
   );
   res.status(201).json(rows[0]);
 }));
 app.put("/api/categories/:id", asyncHandler(async (req: any, res: any) => {
   const body = CategorySchema.parse(req.body);
   const rows = await query(
-    "UPDATE categories SET title=$1, description=$2 WHERE id=$3 RETURNING *",
-    [body.title, body.description, req.params.id]
+    "UPDATE categories SET title=$1, description=$2, tags=$3 WHERE id=$4 RETURNING *",
+    [body.title, body.description, normTags(body.tags), req.params.id]
   );
   if (!rows.length) return res.status(404).json({ error: "not found" });
   res.json(rows[0]);
@@ -103,13 +124,18 @@ app.delete("/api/clues/:id", asyncHandler(async (req: any, res: any) => {
 }));
 
 // ---------- boards ----------
-app.get("/api/boards", asyncHandler(async (_req: any, res: any) => {
+app.get("/api/boards", asyncHandler(async (req: any, res: any) => {
+  const { tag } = req.query as Record<string, string>;
+  const params: any[] = [];
+  const where = tag ? `WHERE $1 = ANY(b.tags)` : "";
+  if (tag) params.push(tag.toLowerCase());
   const rows = await query(
     `SELECT b.*,
        (SELECT COUNT(*)::int FROM board_categories bc WHERE bc.board_id=b.id) AS categories,
        (SELECT COUNT(*)::int FROM clues cl WHERE cl.category_id IN
          (SELECT category_id FROM board_categories WHERE board_id=b.id)) AS clues
-     FROM boards b ORDER BY b.created_at DESC`
+      FROM boards b ${where} ORDER BY b.created_at DESC`,
+    params
   );
   res.json(rows);
 }));
@@ -135,7 +161,10 @@ app.get("/api/boards/:id", asyncHandler(async (req: any, res: any) => {
 
 app.post("/api/boards", asyncHandler(async (req: any, res: any) => {
   const b = BoardSchema.parse(req.body);
-  const rows = await query("INSERT INTO boards (name) VALUES ($1) RETURNING *", [b.name]);
+  const rows = await query(
+    "INSERT INTO boards (name, description, tags) VALUES ($1,$2,$3) RETURNING *",
+    [b.name, b.description, normTags(b.tags)]
+  );
   const board = rows[0] as any;
   const insertCat = async (ids: string[] | undefined, round: string) => {
     if (!ids) return;

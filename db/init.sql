@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS categories (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title TEXT NOT NULL UNIQUE,
   description TEXT DEFAULT '',
+  tags TEXT[] NOT NULL DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
@@ -22,6 +23,8 @@ CREATE TABLE IF NOT EXISTS clues (
 CREATE TABLE IF NOT EXISTS boards (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL UNIQUE,
+  description TEXT NOT NULL DEFAULT '',
+  tags TEXT[] NOT NULL DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
@@ -35,3 +38,5 @@ CREATE TABLE IF NOT EXISTS board_categories (
 
 CREATE INDEX IF NOT EXISTS idx_clues_cat ON clues(category_id);
 CREATE INDEX IF NOT EXISTS idx_clues_round ON clues(round);
+CREATE INDEX IF NOT EXISTS idx_categories_tags ON categories USING GIN (tags);
+CREATE INDEX IF NOT EXISTS idx_boards_tags ON boards USING GIN (tags);
