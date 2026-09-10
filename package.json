@@ -4,11 +4,11 @@
   "version": "1.0.0",
   "workspaces": ["api", "web"],
   "scripts": {
-    "dev": "bun run --filter api dev & bun run --filter web dev",
-    "dev:api": "bun run --filter api dev",
-    "dev:web": "bun run --filter web dev",
-    "build": "bun run --filter web build && bun run --filter api build",
-    "test": "bun run --filter web test -- run",
+    "dev": "bun --cwd api run dev & bun --cwd web run dev",
+    "dev:api": "bun --cwd api run dev",
+    "dev:web": "bun --cwd web run dev",
+    "build": "bun --cwd web run build",
+    "test": "bun --cwd web run test -- run",
     "e2e": "bunx playwright test",
     "db:up": "docker compose up db -d",
     "up": "docker compose up --build"

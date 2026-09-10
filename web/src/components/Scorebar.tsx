@@ -1,20 +1,17 @@
 import type { Player } from "../lib/types";
 
-export function Scorebar({ players, buzzedId }: {
+export function Scorebar({ players }: {
   players: Player[];
-  buzzedId: string | null;
 }) {
   const top = Math.max(...players.map((p) => p.score));
   return (
     <div className="grid gap-2 w-full" style={{ gridTemplateColumns: `repeat(${players.length}, minmax(0,1fr))` }}>
       {players.map((p) => {
-        const active = buzzedId === p.id;
         const leader = p.score === top && top !== 0;
         return (
           <div
             key={p.id}
-            className={`rounded-xl px-4 py-2.5 border bg-black/40 transition-all ${active ? "buzz-pulse border-[#ffcc57]" : "border-white/15"}`}
-            style={{ boxShadow: active ? `0 0 24px ${p.color}66` : undefined }}
+            className="rounded-xl px-4 py-2.5 border bg-black/40 border-white/15"
           >
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full shrink-0" style={{ background: p.color }} />

@@ -147,7 +147,7 @@ export default function App() {
           />
         ) : stage === "board" && board ? (
           <div className="flex flex-col gap-3">
-            <Scorebar players={players} buzzedId={null} />
+            <Scorebar players={players} />
             <div className="flex items-center gap-2">
               <h2 className="font-value tracking-[0.25em] text-[#ffcc57]">
                 {round === "double" ? "DOUBLE JEOPARDY!" : "JEOPARDY!"}

@@ -192,23 +192,6 @@ async function waitForDb(retries = 20) {
   for (let i = 0; i < retries; i++) {
     try {
       await pool.query("SELECT 1");
-      // ensure schema exists (for dev without docker init)
-      await pool.query(`CREATE TABLE IF NOT EXISTS categories (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        title TEXT NOT NULL UNIQUE, description TEXT DEFAULT '', created_at TIMESTAMPTZ DEFAULT now())`);
-      await pool.query(`CREATE TABLE IF NOT EXISTS clues (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(), category_id UUID REFERENCES categories(id) ON DELETE CASCADE,
-        round TEXT NOT NULL DEFAULT 'jeopardy', value INT NOT NULL DEFAULT 200,
-        question TEXT NOT NULL, answer TEXT NOT NULL, daily_double BOOLEAN DEFAULT FALSE,
-        created_at TIMESTAMPTZ DEFAULT now())`);
-      await pool.query(`CREATE TABLE IF NOT EXISTS boards (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(), name TEXT NOT NULL UNIQUE, created_at TIMESTAMPTZ DEFAULT now())`);
-      await pool.query(`CREATE TABLE IF NOT EXISTS board_categories (
-        board_id UUID REFERENCES boards(id) ON DELETE CASCADE,
-        category_id UUID REFERENCES categories(id) ON DELETE CASCADE,
-        round TEXT NOT NULL DEFAULT 'jeopardy', position INT NOT NULL DEFAULT 0,
-        PRIMARY KEY (board_id, category_id, round))`);
-      try { await pool.query(`CREATE EXTENSION IF NOT EXISTS "pgcrypto"`); } catch {}
       console.log("[db] connected");
       return;
     } catch (e) {

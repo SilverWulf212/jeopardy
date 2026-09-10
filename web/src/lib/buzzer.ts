@@ -9,9 +9,6 @@ export function useBuzzers(opts: {
   onBuzz: (playerId: string) => void;
 }) {
   const { enabled, players, lockedOut, onBuzz } = opts;
-  const ref = (window as any).__buzzRef as
-    | { enabled: boolean; players: Player[]; lockedOut: Set<string>; onBuzz: (id: string) => void }
-    | undefined;
 
   (window as any).__buzzRef = { enabled, players, lockedOut, onBuzz };
 

@@ -4,7 +4,7 @@ import { clampWager } from "../lib/game";
 import { useBuzzers } from "../lib/buzzer";
 import { sfx } from "../lib/sound";
 
-type Phase = "wager" | "read" | "buzz" | "reveal";
+type Phase = "wager" | "read" | "buzz";
 
 export function ClueModal({ clue, categoryTitle, players, onResolve, onCancel }: {
   clue: Clue;
@@ -172,7 +172,7 @@ export function ClueModal({ clue, categoryTitle, players, onResolve, onCancel }:
           </div>
         )}
 
-        {(phase === "reveal" || (!buzzedId && locked.size >= players.length)) && (
+        {!buzzedId && locked.size >= players.length && (
           <div className="px-6 pb-6 text-center">
             <div className="font-display text-2xl text-[#ffcc57]">{clue.answer}</div>
           </div>

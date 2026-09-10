@@ -34,7 +34,3 @@ export function clampWager(wager: number, score: number, maxClue = 2000): number
   if (!Number.isFinite(wager)) return Math.min(Math.max(score, min), max);
   return Math.min(Math.max(Math.floor(wager), min), max);
 }
-
-export function findClue(board: BoardFull, id: string): Clue | undefined {
-  return board.clues.find((c) => c.id === id);
-}
