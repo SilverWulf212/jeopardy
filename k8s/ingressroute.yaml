@@ -1,0 +1,20 @@
+# NOTE: tls.secretName is added once the wildcard cert lands:
+#   kubectl -n jeopardy create secret tls jeopardy-tls \
+#     --cert=wildcard.silverwulf.com.crt --key=wildcard.silverwulf.com.key
+# then append:
+#   tls:
+#     secretName: jeopardy-tls
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: jeopardy
+  namespace: jeopardy
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`jeopardy.silverwulf.com`)
+      kind: Rule
+      services:
+        - name: jeopardy
+          port: 80
