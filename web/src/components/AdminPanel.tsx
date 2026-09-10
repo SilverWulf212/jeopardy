@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { api } from "../lib/api";
+import { api, adminToken } from "../lib/api";
 import type { Category, Clue, Round } from "../lib/types";
 
 interface BoardSummary {
@@ -16,6 +16,7 @@ export function AdminPanel({ onChanged }: { onChanged: () => void }) {
   const [tags, setTags] = useState<string[]>([]);
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [token, setToken] = useState(() => adminToken.get());
   const [sel, setSel] = useState<string | null>(null);
   const [clues, setClues] = useState<Clue[]>([]);
   const [loading, setLoading] = useState(true);
@@ -160,6 +161,9 @@ export function AdminPanel({ onChanged }: { onChanged: () => void }) {
             </button>
           ))}
           <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search categories…"
+            className="bg-white/10 rounded-lg px-2 py-1 text-sm w-44" />
+          <input value={token} onChange={(e) => { setToken(e.target.value); adminToken.set(e.target.value); }}
+            type="password" placeholder="Admin token (to edit)"
             className="ml-auto bg-white/10 rounded-lg px-2 py-1 text-sm w-44" />
         </div>
         {msg && <div className="text-amber-300 text-xs mt-2">{msg}</div>}

@@ -29,6 +29,7 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgres://jeopardy:${POSTGRES_PASSWORD:-jeopardy}@db:5432/jeopardy
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-}
       PORT: "3001"
       NODE_ENV: production
     ports:

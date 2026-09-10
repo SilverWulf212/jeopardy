@@ -43,6 +43,17 @@ function normTags(tags: string[] | undefined): string[] {
   return [...new Set((tags ?? []).map((t) => t.trim().toLowerCase()).filter(Boolean))];
 }
 
+// Public can read/play. Writes require ADMIN_TOKEN (empty = open, dev only).
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN ?? "";
+function requireAdmin(req: any, res: any, next: any) {
+  if (!ADMIN_TOKEN) {
+    console.warn("[auth] ADMIN_TOKEN unset — write endpoints open (dev only)");
+    return next();
+  }
+  if (req.headers["x-admin-token"] === ADMIN_TOKEN) return next();
+  res.status(401).json({ error: "admin token required" });
+}
+
 app.get("/api/tags", asyncHandler(async (_req: any, res: any) => {
   const rows = await query<{ tag: string }>(
     `SELECT DISTINCT unnest(tags) AS tag FROM categories WHERE tags <> '{}'
@@ -68,7 +79,7 @@ app.get("/api/categories", asyncHandler(async (req: any, res: any) => {
   const rows = await query(`SELECT * FROM categories ${where} ORDER BY title ASC`, params);
   res.json(rows);
 }));
-app.post("/api/categories", asyncHandler(async (req: any, res: any) => {
+app.post("/api/categories", requireAdmin, asyncHandler(async (req: any, res: any) => {
   const body = CategorySchema.parse(req.body);
   const rows = await query(
     "INSERT INTO categories (title, description, tags) VALUES ($1,$2,$3) RETURNING *",
@@ -76,7 +87,7 @@ app.post("/api/categories", asyncHandler(async (req: any, res: any) => {
   );
   res.status(201).json(rows[0]);
 }));
-app.put("/api/categories/:id", asyncHandler(async (req: any, res: any) => {
+app.put("/api/categories/:id", requireAdmin, asyncHandler(async (req: any, res: any) => {
   const body = CategorySchema.parse(req.body);
   const rows = await query(
     "UPDATE categories SET title=$1, description=$2, tags=$3 WHERE id=$4 RETURNING *",
@@ -85,7 +96,7 @@ app.put("/api/categories/:id", asyncHandler(async (req: any, res: any) => {
   if (!rows.length) return res.status(404).json({ error: "not found" });
   res.json(rows[0]);
 }));
-app.delete("/api/categories/:id", asyncHandler(async (req: any, res: any) => {
+app.delete("/api/categories/:id", requireAdmin, asyncHandler(async (req: any, res: any) => {
   await query("DELETE FROM categories WHERE id=$1", [req.params.id]);
   res.json({ ok: true });
 }));
@@ -101,7 +112,7 @@ app.get("/api/clues", asyncHandler(async (req: any, res: any) => {
   const rows = await query(`SELECT * FROM clues ${where} ORDER BY round, value ASC`, params);
   res.json(rows);
 }));
-app.post("/api/clues", asyncHandler(async (req: any, res: any) => {
+app.post("/api/clues", requireAdmin, asyncHandler(async (req: any, res: any) => {
   const b = ClueSchema.parse(req.body);
   const rows = await query(
     "INSERT INTO clues (category_id, round, value, question, answer, daily_double) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *",
@@ -109,7 +120,7 @@ app.post("/api/clues", asyncHandler(async (req: any, res: any) => {
   );
   res.status(201).json(rows[0]);
 }));
-app.put("/api/clues/:id", asyncHandler(async (req: any, res: any) => {
+app.put("/api/clues/:id", requireAdmin, asyncHandler(async (req: any, res: any) => {
   const b = ClueSchema.parse(req.body);
   const rows = await query(
     "UPDATE clues SET category_id=$1, round=$2, value=$3, question=$4, answer=$5, daily_double=$6 WHERE id=$7 RETURNING *",
@@ -118,7 +129,7 @@ app.put("/api/clues/:id", asyncHandler(async (req: any, res: any) => {
   if (!rows.length) return res.status(404).json({ error: "not found" });
   res.json(rows[0]);
 }));
-app.delete("/api/clues/:id", asyncHandler(async (req: any, res: any) => {
+app.delete("/api/clues/:id", requireAdmin, asyncHandler(async (req: any, res: any) => {
   await query("DELETE FROM clues WHERE id=$1", [req.params.id]);
   res.json({ ok: true });
 }));
@@ -159,7 +170,7 @@ app.get("/api/boards/:id", asyncHandler(async (req: any, res: any) => {
   res.json({ ...board, categories: cats, clues });
 }));
 
-app.post("/api/boards", asyncHandler(async (req: any, res: any) => {
+app.post("/api/boards", requireAdmin, asyncHandler(async (req: any, res: any) => {
   const b = BoardSchema.parse(req.body);
   const rows = await query(
     "INSERT INTO boards (name, description, tags) VALUES ($1,$2,$3) RETURNING *",
@@ -186,7 +197,7 @@ app.post("/api/boards", asyncHandler(async (req: any, res: any) => {
   res.status(201).json(board);
 }));
 
-app.delete("/api/boards/:id", asyncHandler(async (req: any, res: any) => {
+app.delete("/api/boards/:id", requireAdmin, asyncHandler(async (req: any, res: any) => {
   await query("DELETE FROM boards WHERE id=$1", [req.params.id]);
   res.json({ ok: true });
 }));
