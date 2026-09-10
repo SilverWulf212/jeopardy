@@ -5,9 +5,9 @@ services:
     environment:
       POSTGRES_DB: jeopardy
       POSTGRES_USER: jeopardy
-      POSTGRES_PASSWORD: jeopardy
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-jeopardy}
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
@@ -27,7 +27,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgres://jeopardy:jeopardy@db:5432/jeopardy
+      DATABASE_URL: postgres://jeopardy:${POSTGRES_PASSWORD:-jeopardy}@db:5432/jeopardy
       PORT: "3001"
       NODE_ENV: production
     ports:

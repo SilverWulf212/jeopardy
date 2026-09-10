@@ -104,7 +104,13 @@ app.delete("/api/clues/:id", asyncHandler(async (req: any, res: any) => {
 
 // ---------- boards ----------
 app.get("/api/boards", asyncHandler(async (_req: any, res: any) => {
-  const rows = await query("SELECT * FROM boards ORDER BY created_at DESC");
+  const rows = await query(
+    `SELECT b.*,
+       (SELECT COUNT(*)::int FROM board_categories bc WHERE bc.board_id=b.id) AS categories,
+       (SELECT COUNT(*)::int FROM clues cl WHERE cl.category_id IN
+         (SELECT category_id FROM board_categories WHERE board_id=b.id)) AS clues
+     FROM boards b ORDER BY b.created_at DESC`
+  );
   res.json(rows);
 }));
 

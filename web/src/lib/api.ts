@@ -36,6 +36,6 @@ export const api = {
     }).then((r) => j<Clue>(r)),
   deleteClue: (id: string) => fetch(`${BASE}/api/clues/${id}`, { method: "DELETE" }).then((r) => j<any>(r)),
 
-  boards: () => fetch(`${BASE}/api/boards`).then((r) => j<{ id: string; name: string }[]>(r)),
+  boards: () => fetch(`${BASE}/api/boards`).then((r) => j<{ id: string; name: string; categories: number; clues: number }[]>(r)),
   board: (id: string): Promise<BoardFull> => fetch(`${BASE}/api/boards/${id}`).then((r) => j<BoardFull>(r)),
 };

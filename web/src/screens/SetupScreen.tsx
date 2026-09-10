@@ -7,7 +7,7 @@ const COLORS = ["#ff5470", "#3ddad7", "#ffcc57", "#7cf29c", "#b28bff"];
 export function SetupScreen({ players, setPlayers, boards, boardId, setBoardId, onStart }: {
   players: Player[];
   setPlayers: (p: Player[]) => void;
-  boards: { id: string; name: string }[];
+  boards: { id: string; name: string; categories?: number; clues?: number }[];
   boardId: string | null;
   setBoardId: (id: string) => void;
   onStart: () => void;
@@ -98,9 +98,12 @@ export function SetupScreen({ players, setPlayers, boards, boardId, setBoardId, 
               <button
                 key={b.id}
                 onClick={() => setBoardId(b.id)}
-                className={`text-left px-4 py-3 rounded-xl border font-display font-bold ${boardId === b.id ? "bg-[#060ce9] border-[#ffcc57]" : "bg-black/30 border-white/10 hover:border-white/30"}`}
+                className={`text-left px-4 py-3 rounded-xl border ${boardId === b.id ? "bg-[#060ce9] border-[#ffcc57]" : "bg-black/30 border-white/10 hover:border-white/30"}`}
               >
-                {b.name}
+                <div className="font-display font-bold">{b.name}</div>
+                <div className="text-xs font-normal text-white/50 mt-0.5">
+                  {b.categories ?? "?"} categories · {b.clues ?? "?"} clues
+                </div>
               </button>
             ))}
             {!boards.length && <div className="text-white/50 text-sm">No boards yet — create questions in Manage, or wait for seed data.</div>}

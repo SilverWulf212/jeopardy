@@ -21,8 +21,9 @@ export function useBuzzers(opts: {
     window.addEventListener("keydown", (e: KeyboardEvent) => {
       const st = (window as any).__buzzRef;
       if (!st?.enabled) return;
-      if ((e.target as HTMLElement)?.tagName === "INPUT") return;
-      if ((e.target as HTMLElement)?.tagName === "TEXTAREA") return;
+      const t = e.target as HTMLElement;
+      if (t?.tagName === "INPUT" || t?.tagName === "TEXTAREA" || t?.tagName === "SELECT") return;
+      if (t?.isContentEditable) return;
       const p = st.players.find((x: Player) => x.key === (e as KeyboardEvent).code);
       if (!p) return;
       if (st.lockedOut.has(p.id)) return;

@@ -115,9 +115,11 @@ export function ClueModal({ clue, categoryTitle, players, onResolve, onCancel }:
         )}
 
         {phase === "buzz" && !buzzedId && (
-          <div className="px-6 pb-6">
-            <div className="text-center font-value tracking-[0.3em] text-[#ffcc57] buzz-pulse inline-block w-full">⚡ BUZZ IN — {remaining.map((p) => `${p.name} [${p.keyLabel}]`).join(" · ")} ⚡</div>
-            <div className="flex justify-center gap-2 mt-3 flex-wrap">
+          <div className="pb-6">
+            <div className="buzz-band font-value tracking-[0.25em] text-black text-lg md:text-xl text-center py-3">
+              BUZZ IN — {remaining.map((p) => `${p.name} [${p.keyLabel}]`).join(" · ")}
+            </div>
+            <div className="flex justify-center gap-2 mt-4 flex-wrap px-6">
               {players.map((p) => (
                 <button
                   key={p.id}
