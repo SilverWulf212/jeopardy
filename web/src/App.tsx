@@ -107,6 +107,10 @@ export default function App() {
     }
   }, [usedIds, board, round, roundCats.length, stage]);
 
+  useEffect(() => {
+    if (stage === "winner") sfx.win();
+  }, [stage]);
+
   const resolveClue = (winnerId: string | null, correct: boolean, amount: number) => {
     if (!activeClue) return;
     if (winnerId && amount > 0) {
