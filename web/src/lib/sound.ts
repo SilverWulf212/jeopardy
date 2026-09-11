@@ -1,11 +1,19 @@
 // Tiny WebAudio bleeps — no assets needed, self-hosted.
 let ctx: AudioContext | null = null;
+let muted = false;
+try { muted = localStorage.getItem("j-muted") === "1"; } catch {}
+export const isMuted = () => muted;
+export function setMuted(m: boolean) {
+  muted = m;
+  try { localStorage.setItem("j-muted", m ? "1" : "0"); } catch {}
+}
 function ac(): AudioContext {
   if (!ctx) ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
   if (ctx.state === "suspended") void ctx.resume();
   return ctx;
 }
 function tone(freq: number, dur = 0.12, type: OscillatorType = "square", gain = 0.04, when = 0) {
+  if (muted) return;
   try {
     const a = ac();
     const o = a.createOscillator();

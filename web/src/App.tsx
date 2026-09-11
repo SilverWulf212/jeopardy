@@ -8,10 +8,15 @@ import { Board } from "./components/Board";
 import { ClueModal } from "./components/ClueModal";
 import { AdminPanel } from "./components/AdminPanel";
 import { SetupScreen } from "./screens/SetupScreen";
-import { sfx } from "./lib/sound";
+import { sfx, isMuted, setMuted } from "./lib/sound";
 
 type Tab = "play" | "manage";
 type Stage = "setup" | "board" | "final" | "winner";
+
+interface BoardSummary {
+  id: string; name: string; description: string; tags: string[];
+  categories: number; clues: number;
+}
 
 const store = {
   loadPlayers(): Player[] {
@@ -30,8 +35,11 @@ export default function App() {
   const [tab, setTab] = useState<Tab>("play");
   const [stage, setStage] = useState<Stage>("setup");
   const [players, setPlayersState] = useState<Player[]>(store.loadPlayers);
-  const [boards, setBoards] = useState<{ id: string; name: string }[]>([]);
-  const [boardId, setBoardId] = useState<string | null>(null);
+  const [boards, setBoards] = useState<BoardSummary[]>([]);
+  const [boardId, setBoardId] = useState<string | null>(() => {
+    try { return localStorage.getItem("j-board-id"); } catch { return null; }
+  });
+  const [muted, setMutedState] = useState(() => isMuted());
   const [board, setBoard] = useState<BoardFull | null>(null);
   const [round, setRound] = useState<Round>("jeopardy");
   const [usedIds, setUsedIds] = useState<Set<string>>(new Set());
@@ -43,13 +51,17 @@ export default function App() {
   const [finalRevealed, setFinalRevealed] = useState(false);
 
   const setPlayers = (p: Player[]) => { setPlayersState(p); store.savePlayers(p); };
+  const pickBoard = (id: string) => {
+    setBoardId(id);
+    try { localStorage.setItem("j-board-id", id); } catch {}
+  };
 
   const loadBoards = useCallback(async () => {
     try {
       const b = await api.boards();
       setBoards(b);
       setApiDown(false);
-      if (!boardId && b.length) setBoardId(b[0].id);
+      if (b.length && !b.some((x) => x.id === boardId)) pickBoard(b[0].id);
     } catch { setApiDown(true); }
   }, [boardId]);
 
@@ -127,6 +139,14 @@ export default function App() {
           {stage === "board" && (
             <button onClick={() => setStage("setup")} className="px-3 py-1.5 rounded-lg bg-white/10 text-xs">Setup</button>
           )}
+          <button
+            onClick={() => { const m = !muted; setMuted(m); setMutedState(m); }}
+            title={muted ? "Unmute sounds" : "Mute sounds"}
+            aria-pressed={muted}
+            className="px-3 py-1.5 rounded-lg bg-white/10 text-xs font-semibold"
+          >
+            {muted ? "Sound off" : "Sound on"}
+          </button>
         </div>
       </header>
 
@@ -142,7 +162,7 @@ export default function App() {
         ) : stage === "setup" ? (
           <SetupScreen
             players={players} setPlayers={setPlayers}
-            boards={boards} boardId={boardId} setBoardId={(id) => setBoardId(id)}
+            boards={boards} boardId={boardId} setBoardId={pickBoard}
             onStart={startGame}
           />
         ) : stage === "board" && board ? (
@@ -173,7 +193,7 @@ export default function App() {
         ) : (
           <div className="text-center py-16">
             <div className="font-value tracking-[0.3em] text-[#ffcc57]">WINNER</div>
-            <h2 className="font-display text-5xl mt-2">🏆 {winner?.name}</h2>
+            <h2 className="font-display text-5xl mt-2">{winner?.name}</h2>
             <div className="font-value text-4xl mt-2">${winner?.score.toLocaleString()}</div>
             <div className="flex justify-center gap-2 mt-6">
               {players.map((p) => (

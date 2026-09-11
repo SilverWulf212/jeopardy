@@ -7,7 +7,7 @@ const COLORS = ["#ff5470", "#3ddad7", "#ffcc57", "#7cf29c", "#b28bff"];
 export function SetupScreen({ players, setPlayers, boards, boardId, setBoardId, onStart }: {
   players: Player[];
   setPlayers: (p: Player[]) => void;
-  boards: { id: string; name: string; categories?: number; clues?: number }[];
+  boards: { id: string; name: string; description?: string; tags?: string[]; categories?: number; clues?: number }[];
   boardId: string | null;
   setBoardId: (id: string) => void;
   onStart: () => void;
@@ -101,8 +101,12 @@ export function SetupScreen({ players, setPlayers, boards, boardId, setBoardId, 
                 className={`text-left px-4 py-3 rounded-xl border ${boardId === b.id ? "bg-[#060ce9] border-[#ffcc57]" : "bg-black/30 border-white/10 hover:border-white/30"}`}
               >
                 <div className="font-display font-bold">{b.name}</div>
+                {!!b.description && <div className="text-xs font-normal text-white/50 mt-0.5">{b.description}</div>}
                 <div className="text-xs font-normal text-white/50 mt-0.5">
                   {b.categories ?? "?"} categories · {b.clues ?? "?"} clues
+                  {(b.tags ?? []).map((t) => (
+                    <span key={t} className="ml-1 px-1 rounded bg-white/10 text-white/60">#{t}</span>
+                  ))}
                 </div>
               </button>
             ))}

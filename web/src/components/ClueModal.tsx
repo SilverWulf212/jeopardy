@@ -116,7 +116,7 @@ export function ClueModal({ clue, categoryTitle, players, onResolve, onCancel }:
 
         {phase === "buzz" && !buzzedId && (
           <div className="pb-6">
-            <div className="buzz-band font-value tracking-[0.25em] text-black text-lg md:text-xl text-center py-3">
+            <div className="buzz-band font-value tracking-[0.25em] text-black text-lg md:text-xl text-center py-3" role="status" aria-live="assertive">
               BUZZ IN — {remaining.map((p) => `${p.name} [${p.keyLabel}]`).join(" · ")}
             </div>
             <div className="flex justify-center gap-2 mt-4 flex-wrap px-6">
@@ -142,8 +142,8 @@ export function ClueModal({ clue, categoryTitle, players, onResolve, onCancel }:
 
         {buzzedId && buzzedPlayer && phase === "buzz" && (
           <div className="px-6 pb-6 text-center">
-            <div className="font-value text-2xl" style={{ color: buzzedPlayer.color }}>
-              🔔 {buzzedPlayer.name} buzzed!
+            <div className="font-value text-2xl" role="status" style={{ color: buzzedPlayer.color }}>
+              {buzzedPlayer.name} buzzed!
             </div>
             {showAnswer && <div className="font-display text-xl mt-1 text-[#ffcc57]">{clue.answer}</div>}
             <div className="flex justify-center gap-2 mt-4 flex-wrap">
