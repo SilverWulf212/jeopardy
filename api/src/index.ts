@@ -213,8 +213,13 @@ const candidates = [
 const staticDir = candidates.find((p) => fs.existsSync(p) && fs.existsSync(path.join(p, "index.html")));
 if (staticDir) {
   console.log(`[web] serving ${staticDir}`);
-  app.use(express.static(staticDir));
-  app.get("*", (_req, res) => res.sendFile(path.join(staticDir, "index.html")));
+  // Hashed assets are immutable; the HTML shell must never cache (else
+  // players run stale game code with old behavior).
+  app.use(express.static(staticDir, { maxAge: "1y", immutable: true }));
+  app.get("*", (_req, res) => {
+    res.set("Cache-Control", "no-store");
+    res.sendFile(path.join(staticDir, "index.html"));
+  });
 } else {
   console.log("[web] no static build found, API-only mode");
 }
