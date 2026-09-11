@@ -5,6 +5,9 @@ WORKDIR /web
 COPY web/package.json ./
 RUN npm install
 COPY web/ ./
+ARG VITE_UMAMI_URL
+ARG VITE_UMAMI_WEBSITE_ID
+ENV VITE_UMAMI_URL=$VITE_UMAMI_URL VITE_UMAMI_WEBSITE_ID=$VITE_UMAMI_WEBSITE_ID
 RUN npm run build && date -u +%Y%m%d-%H%M > ./dist/built-at.txt
 
 FROM node:20.19-alpine AS app

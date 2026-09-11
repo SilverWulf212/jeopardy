@@ -139,6 +139,7 @@ export function ClueModal({ clue, categoryTitle, players, onResolve, onCancel }:
             </div>
             <div className="px-6 pb-1 pt-3 text-center">
               <div className="text-[11px] uppercase tracking-widest text-white/40">No buzz? Award directly</div>
+              <div className="text-white/40 text-xs mt-0.5">(✗ everyone who missed it — the card clears off the board once all players are marked ✓ or ✗)</div>
               <div className="flex justify-center gap-1.5 mt-1.5 flex-wrap">
                 {players.filter((p) => !locked.has(p.id)).map((p) => (
                   <span key={p.id} className="inline-flex items-center gap-1 rounded-lg bg-white/5 border border-white/10 pl-2.5 py-1 text-xs">
@@ -158,6 +159,17 @@ export function ClueModal({ clue, categoryTitle, players, onResolve, onCancel }:
                 ))}
               </div>
             </div>
+            {!needsWager && (
+              <div className="px-6 pb-5 text-center">
+                <button
+                  data-testid="no-answer"
+                  onClick={() => { sfx.wrong(); onResolve(null, false, 0); }}
+                  className="px-4 py-1.5 rounded-lg bg-white/10 border border-white/20 text-sm text-white/70 hover:text-white"
+                >
+                  No answer — pull from board
+                </button>
+              </div>
+            )}
           </div>
         )}
 
