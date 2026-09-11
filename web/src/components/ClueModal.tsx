@@ -125,7 +125,7 @@ export function ClueModal({ clue, categoryTitle, players, onResolve, onCancel }:
                   key={p.id}
                   disabled={locked.has(p.id)}
                   onClick={() => setBuzzedId(p.id)}
-                  className="px-3 py-1.5 rounded-lg bg-white/10 border border-white/20 text-sm disabled:opacity-30"
+                  className="tap44 px-4 py-1.5 rounded-lg bg-white/10 border border-white/20 text-sm disabled:opacity-30"
                 >
                   {p.name} buzz
                 </button>

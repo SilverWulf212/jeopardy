@@ -220,9 +220,9 @@ export function AdminPanel({ onChanged }: { onChanged: () => void }) {
                   {(c.tags ?? []).slice(0, 2).map((t) => (
                     <span key={t} className="text-[10px] px-1 rounded bg-white/10 text-white/60">#{t}</span>
                   ))}
-                  <button title="Add to Single" onClick={() => addTo("single", c.id)} className="px-1.5 py-0.5 rounded bg-white/10 text-xs font-bold hover:bg-[#3ddad7] hover:text-black">S</button>
-                  <button title="Add to Double" onClick={() => addTo("double", c.id)} className="px-1.5 py-0.5 rounded bg-white/10 text-xs font-bold hover:bg-[#ff5470] hover:text-black">D</button>
-                  <button title="Set as Final" onClick={() => addTo("final", c.id)} className="px-1.5 py-0.5 rounded bg-white/10 text-xs font-bold hover:bg-[#ffcc57] hover:text-black">F</button>
+                  <button title="Add to Single" onClick={() => addTo("single", c.id)} className="tap44 px-1.5 py-0.5 rounded bg-white/10 text-xs font-bold hover:bg-[#3ddad7] hover:text-black">S</button>
+                  <button title="Add to Double" onClick={() => addTo("double", c.id)} className="tap44 px-1.5 py-0.5 rounded bg-white/10 text-xs font-bold hover:bg-[#ff5470] hover:text-black">D</button>
+                  <button title="Set as Final" onClick={() => addTo("final", c.id)} className="tap44 px-1.5 py-0.5 rounded bg-white/10 text-xs font-bold hover:bg-[#ffcc57] hover:text-black">F</button>
                 </div>
               );
             })}
@@ -388,7 +388,7 @@ function SlotCol({ title, ids, slot, onDrop, onRemove, dragId, setDragId, titleO
         {ids.map((id) => (
           <div key={id} className="flex items-center gap-1 bg-[#060ce9] border border-white/20 rounded-lg px-2 py-1 text-sm">
             <span className="flex-1 truncate font-semibold">{titleOf(id)}</span>
-            <button onClick={() => onRemove(id)} className="text-white/50 hover:text-red-400 text-xs px-1">✕</button>
+            <button onClick={() => onRemove(id)} aria-label={`Remove ${titleOf(id)}`} className="tap44 text-white/50 hover:text-red-400 text-xs px-1">✕</button>
           </div>
         ))}
         {Array.from({ length: Math.max(0, max - ids.length) }).map((_, i) => (

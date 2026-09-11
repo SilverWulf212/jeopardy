@@ -3,24 +3,42 @@
 @tailwind utilities;
 
 :root {
+  color-scheme: dark;
   --j-blue: #060ce9;
   --j-blue-deep: #04048a;
   --j-ink: #01022b;
   --j-gold: #d7a94b;
   --j-gold-bright: #ffcc57;
+  --px: 0;
+  --py: 0;
 }
 
 html, body, #root { height: 100%; }
 
 body {
-  background:
-    radial-gradient(1200px 600px at 50% -10%, #1a1aff55, transparent),
-    radial-gradient(900px 500px at 85% 110%, #d7a94b22, transparent),
-    linear-gradient(180deg, #02023a 0%, #01022b 60%, #000018 100%);
+  background: linear-gradient(180deg, #02023a 0%, #01022b 60%, #000018 100%);
   color: #fff;
   font-family: Inter, system-ui, sans-serif;
   overflow-x: hidden;
 }
+
+/* Parallax arena light: two geometric layers drifting at different rates.
+   Driven by --px/--py (-1..1) from a rAF-throttled pointer listener. */
+.grain { position: relative; }
+.grain::before, .grain::after {
+  content: ""; position: fixed; inset: -4vmax; pointer-events: none; z-index: 0;
+}
+.grain::before {
+  background:
+    radial-gradient(1100px 550px at calc(50% + var(--px) * 26px) calc(-8% + var(--py) * 18px), #1a1aff55, transparent 70%),
+    radial-gradient(800px 460px at calc(86% + var(--px) * -18px) calc(108% + var(--py) * -14px), #d7a94b22, transparent 70%);
+}
+.grain::after {
+  background:
+    conic-gradient(from 200deg at calc(12% + var(--px) * 34px) calc(90% + var(--py) * 22px), transparent 0deg, #3340ff14 24deg, transparent 48deg),
+    conic-gradient(from 20deg at calc(90% + var(--px) * -30px) calc(8% + var(--py) * 20px), transparent 0deg, #ffcc5712 20deg, transparent 44deg);
+}
+.grain > * { position: relative; z-index: 1; }
 
 .font-display { font-family: Bitter, Georgia, serif; }
 .font-value { font-family: Oswald, Impact, sans-serif; }
@@ -90,9 +108,30 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+  .grain::before, .grain::after { transform: none !important; }
 }
 
-.grain::after {
-  content: ""; position: fixed; inset: 0; pointer-events: none; opacity: .06;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");
+/* Native controls, tuned to the arena (pull-downs, numbers, date pickers). */
+select, option, optgroup {
+  background-color: #0a0ab8;
+  color: #fff;
+}
+input[type="number"] { font-variant-numeric: tabular-nums; }
+input::placeholder, textarea::placeholder { color: #ffffff66; }
+
+/* 44px touch targets for dense host controls. */
+.tap44 { min-width: 2.75rem; min-height: 2.75rem; display: inline-flex; align-items: center; justify-content: center; }
+
+/* Fluid board type: couch-legible on TV, compact on phones. */
+.j-tile .j-gold-text { font-size: clamp(1.05rem, 1rem + 2.6vw, 2.25rem); }
+.j-cat span { font-size: clamp(0.6rem, 0.55rem + 1.4vw, 0.95rem); }
+
+/* Small screens: tighter chrome, bottom-sheet clue modal. */
+@media (max-width: 640px) {
+  .j-tile { border-width: 1px; }
+  [data-testid="clue-modal"] { align-items: flex-end !important; padding: 0 !important; }
+  [data-testid="clue-modal"] > div {
+    width: 100%; max-width: 100%; border-radius: 1rem 1rem 0 0;
+    max-height: 92dvh; overflow-y: auto;
+  }
 }

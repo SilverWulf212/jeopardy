@@ -111,6 +111,24 @@ export default function App() {
     if (stage === "winner") sfx.win();
   }, [stage]);
 
+  // Parallax arena light: pointer drives --px/--py at rAF throttle.
+  // Off for reduced-motion and touch pointers.
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (window.matchMedia("(pointer: coarse)").matches) return;
+    let raf = 0;
+    const onMove = (e: PointerEvent) => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const root = document.documentElement;
+        root.style.setProperty("--px", ((e.clientX / window.innerWidth) * 2 - 1).toFixed(3));
+        root.style.setProperty("--py", ((e.clientY / window.innerHeight) * 2 - 1).toFixed(3));
+      });
+    };
+    window.addEventListener("pointermove", onMove, { passive: true });
+    return () => { window.removeEventListener("pointermove", onMove); cancelAnimationFrame(raf); };
+  }, []);
+
   const resolveClue = (winnerId: string | null, correct: boolean, amount: number) => {
     if (!activeClue) return;
     if (winnerId && amount > 0) {
