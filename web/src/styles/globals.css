@@ -124,11 +124,15 @@ input::placeholder, textarea::placeholder { color: #ffffff66; }
 
 /* Fluid board type: couch-legible on TV, compact on phones. */
 .j-tile .j-gold-text { font-size: clamp(1.05rem, 1rem + 2.6vw, 2.25rem); }
-.j-cat span { font-size: clamp(0.6rem, 0.55rem + 1.4vw, 0.95rem); }
+.j-cat { overflow: hidden; }
+.j-cat span { font-size: clamp(0.6rem, 0.55rem + 1.4vw, 0.95rem); overflow-wrap: anywhere; }
 
 /* Small screens: tighter chrome, bottom-sheet clue modal. */
 @media (max-width: 640px) {
   .j-tile { border-width: 1px; }
+  .j-tile .j-gold-text { font-size: 1rem; }
+  .j-cat span { font-size: 0.58rem; line-height: 1.15; }
+  .j-cat { min-height: 60px; }
   [data-testid="clue-modal"] { align-items: flex-end !important; padding: 0 !important; }
   [data-testid="clue-modal"] > div {
     width: 100%; max-width: 100%; border-radius: 1rem 1rem 0 0;
