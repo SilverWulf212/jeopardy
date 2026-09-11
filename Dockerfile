@@ -5,7 +5,7 @@ WORKDIR /web
 COPY web/package.json ./
 RUN npm install
 COPY web/ ./
-RUN npm run build
+RUN npm run build && date -u +%Y%m%d-%H%M > ./dist/built-at.txt
 
 FROM node:20.19-alpine AS app
 WORKDIR /app

@@ -137,6 +137,20 @@ export function ClueModal({ clue, categoryTitle, players, onResolve, onCancel }:
               </button>
               {showAnswer && <div className="font-display text-xl mt-1 text-[#ffcc57]">{clue.answer}</div>}
             </div>
+            <div className="px-6 pb-1 pt-3 text-center">
+              <div className="text-[11px] uppercase tracking-widest text-white/40">No buzz? Award directly</div>
+              <div className="flex justify-center gap-1.5 mt-1.5 flex-wrap">
+                {players.map((p) => (
+                  <span key={p.id} className="inline-flex items-center gap-1 rounded-lg bg-white/5 border border-white/10 pl-2.5 py-1 text-xs">
+                    {p.name}
+                    <button aria-label={`Mark ${p.name} correct`} onClick={() => { sfx.correct(); onResolve(p.id, true, amount); }}
+                      className="px-2 py-1 rounded-md bg-green-600 font-bold">✓</button>
+                    <button aria-label={`Mark ${p.name} wrong`} onClick={() => { sfx.wrong(); onResolve(p.id, false, amount); }}
+                      className="px-2 py-1 rounded-md bg-red-600 font-bold">✗</button>
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
         )}
 

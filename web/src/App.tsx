@@ -40,6 +40,10 @@ export default function App() {
     try { return localStorage.getItem("j-board-id"); } catch { return null; }
   });
   const [muted, setMutedState] = useState(() => isMuted());
+  const [buildStamp, setBuildStamp] = useState("");
+  useEffect(() => {
+    fetch("built-at.txt").then((r) => (r.ok ? r.text() : "")).then((t) => setBuildStamp(t.trim())).catch(() => {});
+  }, []);
   const [board, setBoard] = useState<BoardFull | null>(null);
   const [round, setRound] = useState<Round>("jeopardy");
   const [usedIds, setUsedIds] = useState<Set<string>>(new Set());
@@ -147,7 +151,7 @@ export default function App() {
       <header className="sticky top-0 z-40 backdrop-blur bg-[#01022b]/80 border-b border-white/10">
         <div className="max-w-6xl mx-auto px-4 py-2 flex items-center gap-2">
           <span className="font-value font-bold tracking-widest text-[#ffcc57]">JEOPARDY!</span>
-          <span className="text-white/30 text-xs hidden sm:inline">self-hosted</span>
+          <span className="text-white/30 text-xs hidden sm:inline">self-hosted{buildStamp ? ` · ${buildStamp}` : ""}</span>
           <nav className="ml-auto flex gap-1">
             {(["play", "manage"] as Tab[]).map((t) => (
               <button
