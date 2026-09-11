@@ -215,8 +215,9 @@ if (staticDir) {
   console.log(`[web] serving ${staticDir}`);
   // Hashed assets are immutable; the HTML shell must never cache (else
   // players run stale game code with old behavior).
+  app.use("/assets", express.static(staticDir + "/assets", { maxAge: "1y", immutable: true }));
   app.use(express.static(staticDir, {
-    maxAge: "1y", immutable: true, index: false,
+    index: false, maxAge: "1h",
     setHeaders: (res, p) => { if (p.endsWith("built-at.txt")) res.set("Cache-Control", "no-store"); },
   }));
   app.get("*", (_req, res) => {

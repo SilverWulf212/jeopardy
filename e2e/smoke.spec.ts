@@ -12,12 +12,27 @@ test("board loads, clue opens, buzzer + scoring work", async ({ page }) => {
   await page.locator(".j-tile:not(:disabled)").first().click();
   await expect(page.getByTestId("clue-modal")).toBeVisible();
   await page.getByTestId("enable-buzzer").click({ timeout: 5000 }).catch(() => {});
-  // click first "buzz" fallback button
-  const buzzBtns = page.getByRole("button", { name: /buzz$/ });
-  if (await buzzBtns.first().isVisible().catch(() => false)) {
-    await buzzBtns.first().click();
-    await expect(page.getByTestId("mark-correct")).toBeVisible();
-    await page.getByTestId("mark-correct").click();
-    await expect(page.getByTestId("clue-modal")).toBeHidden();
+  // direct award without buzz: tile consumed, modal closes
+  if (await page.getByTestId("clue-modal").isVisible().catch(() => false)) {
+    await page.getByRole("button", { name: "✕" }).click();
+    await expect(page.getByTestId("clue-modal")).toBeHidden({ timeout: 5000 });
   }
+  await page.locator(".j-tile:not(:disabled)").first().click();
+  await expect(page.getByTestId("clue-modal")).toBeVisible();
+  await page.getByTestId("enable-buzzer").click({ timeout: 5000 }).catch(() => {});
+  await page.waitForTimeout(800);
+  const usedBefore = await page.locator(".j-tile[disabled]").count();
+  await page.getByRole("button", { name: /mark player 1 correct/i }).click();
+  await expect(page.getByTestId("clue-modal")).toBeHidden({ timeout: 5000 });
+  expect(await page.locator(".j-tile[disabled]").count()).toBeGreaterThan(usedBefore);
+});
+
+test("cache headers: shell no-store, assets immutable", async ({ page }) => {
+  const shell = await page.request.get("/");
+  expect(shell.headers()["cache-control"]).toContain("no-store");
+  const html = await shell.text();
+  const asset = html.match(/\/assets\/index-[^"]+\.js/)?.[0];
+  expect(asset).toBeTruthy();
+  const js = await page.request.get(asset!);
+  expect(js.headers()["cache-control"]).toContain("immutable");
 });

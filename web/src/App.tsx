@@ -42,7 +42,7 @@ export default function App() {
   const [muted, setMutedState] = useState(() => isMuted());
   const [buildStamp, setBuildStamp] = useState("");
   useEffect(() => {
-    fetch("built-at.txt").then((r) => (r.ok ? r.text() : "")).then((t) => setBuildStamp(t.trim())).catch(() => {});
+    fetch("/built-at.txt", { cache: "no-store" }).then((r) => (r.ok ? r.text() : "")).then((t) => setBuildStamp(t.trim())).catch(() => {});
   }, []);
   const [board, setBoard] = useState<BoardFull | null>(null);
   const [round, setRound] = useState<Round>("jeopardy");
