@@ -35,8 +35,8 @@ body {
 }
 .grain::after {
   background:
-    conic-gradient(from 200deg at calc(12% + var(--px) * 34px) calc(90% + var(--py) * 22px), transparent 0deg, #3340ff14 24deg, transparent 48deg),
-    conic-gradient(from 20deg at calc(90% + var(--px) * -30px) calc(8% + var(--py) * 20px), transparent 0deg, #ffcc5712 20deg, transparent 44deg);
+    conic-gradient(from 200deg at calc(12% + var(--px) * 34px) calc(90% + var(--py) * 22px), transparent 0deg, #3340ff0a 34deg, transparent 72deg),
+    conic-gradient(from 20deg at calc(90% + var(--px) * -30px) calc(8% + var(--py) * 20px), transparent 0deg, #ffcc570a 30deg, transparent 66deg);
 }
 .grain > * { position: relative; z-index: 1; }
 
