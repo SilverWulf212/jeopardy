@@ -12,10 +12,6 @@ export function cluesFor(board: BoardFull, categoryId: string, round: Round): Cl
     .sort((a, b) => a.value - b.value);
 }
 
-export function roundValues(round: Round): number[] {
-  return round === "double" ? [400, 800, 1200, 1600, 2000] : [200, 400, 600, 800, 1000];
-}
-
 export function isBoardClear(board: BoardFull, round: Round, usedIds: Set<string>): boolean {
   return cluesForRound(board, round).every((c) => usedIds.has(c.id));
 }

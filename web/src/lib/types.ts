@@ -9,6 +9,11 @@ export interface Category {
   position?: number;
 }
 
+export interface BoardSummary {
+  id: string; name: string; description: string; tags: string[];
+  categories: number; clues: number;
+}
+
 export interface Clue {
   id: string;
   category_id: string;

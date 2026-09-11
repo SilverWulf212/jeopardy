@@ -1,11 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { api, adminToken } from "../lib/api";
-import type { Category, Clue, Round } from "../lib/types";
-
-interface BoardSummary {
-  id: string; name: string; description: string; tags: string[];
-  categories: number; clues: number;
-}
+import type { BoardSummary, Category, Clue, Round } from "../lib/types";
 
 type Slot = "single" | "double" | "final";
 

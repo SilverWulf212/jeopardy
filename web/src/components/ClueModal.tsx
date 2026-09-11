@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import type { Clue, Player } from "../lib/types";
 import { clampWager } from "../lib/game";
 import { useBuzzers } from "../lib/buzzer";
@@ -46,7 +46,7 @@ export function ClueModal({ clue, categoryTitle, players, onResolve, onCancel }:
     else if (phase === "read") sfx.select();
   }, [clue.id, phase, clue.daily_double]);
 
-  const remaining = useMemo(() => players.filter((p) => !locked.has(p.id)), [players, locked]);
+  const remaining = players.filter((p) => !locked.has(p.id));
 
   if (phase === "wager") {
     // Daily Double: pick player first (default highest score), then wager

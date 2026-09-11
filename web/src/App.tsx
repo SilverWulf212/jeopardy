@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { BoardFull, Clue, Player, Round } from "./lib/types";
+import type { BoardFull, BoardSummary, Clue, Player, Round } from "./lib/types";
 import { DEFAULT_PLAYERS } from "./lib/types";
 import { api } from "./lib/api";
 import { categoriesForRound, isBoardClear, applyScore, clampWager } from "./lib/game";
@@ -12,11 +12,6 @@ import { sfx, isMuted, setMuted } from "./lib/sound";
 
 type Tab = "play" | "manage";
 type Stage = "setup" | "board" | "final" | "winner";
-
-interface BoardSummary {
-  id: string; name: string; description: string; tags: string[];
-  categories: number; clues: number;
-}
 
 const store = {
   loadPlayers(): Player[] {
@@ -143,7 +138,6 @@ export default function App() {
     setActiveClue(null);
   };
 
-  const finalClue = board?.clues.find((c) => c.round === "final");
   const winner = [...players].sort((a, b) => b.score - a.score)[0];
 
   return (
