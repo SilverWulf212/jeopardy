@@ -26,9 +26,10 @@ export function Board({ board, round, usedIds, onPick }: {
               <button
                 key={clue.id}
                 disabled={used}
+                aria-hidden={used}
                 onClick={() => onPick(clue)}
                 data-testid={`clue-${clue.value}-${c.title}`}
-                className="j-tile rounded-lg h-full min-h-[3rem] flex items-center justify-center select-none"
+                className={`j-tile rounded-lg h-full min-h-[3rem] flex items-center justify-center select-none ${used ? "invisible" : ""}`}
               >
                 {used ? (
                   <span className="text-white/20 font-value text-2xl">·</span>
