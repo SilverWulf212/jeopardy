@@ -12,10 +12,10 @@ export function Board({ board, round, usedIds, onPick }: {
     return <div className="p-10 text-center text-white/60">No categories for this round yet — add them in Manage.</div>;
   }
   return (
-    <div className="board-enter grid gap-2" style={{ gridTemplateColumns: `repeat(${cats.length}, minmax(0,1fr))` }}>
+    <div className="board-enter grid gap-2 h-full" style={{ gridTemplateColumns: `repeat(${cats.length}, minmax(0,1fr))`, gridAutoRows: "1fr" }}>
       {cats.map((c) => (
-        <div key={c.id} className="flex flex-col gap-2">
-          <div className="j-cat rounded-lg px-2 py-3 min-h-[76px] flex items-center justify-center text-center">
+        <div key={c.id} className="flex flex-col gap-2 min-h-0">
+          <div className="j-cat rounded-lg px-2 py-3 min-h-[76px] shrink-0 flex items-center justify-center text-center">
             <span className="font-display font-bold text-[13px] md:text-[15px] leading-tight tracking-wide uppercase">
               {c.title}
             </span>
@@ -28,7 +28,7 @@ export function Board({ board, round, usedIds, onPick }: {
                 disabled={used}
                 onClick={() => onPick(clue)}
                 data-testid={`clue-${clue.value}-${c.title}`}
-                className="j-tile rounded-lg aspect-[16/10] flex items-center justify-center"
+                className="j-tile rounded-lg h-full min-h-[3rem] flex items-center justify-center select-none"
               >
                 {used ? (
                   <span className="text-white/20 font-value text-2xl">·</span>

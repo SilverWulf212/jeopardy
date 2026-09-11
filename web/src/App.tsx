@@ -189,7 +189,7 @@ export default function App() {
             onStart={startGame}
           />
         ) : stage === "board" && board ? (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-3 h-[calc(100dvh-5.5rem)] min-h-[540px]">
             <Scorebar players={players} />
             <div className="flex items-center gap-2">
               <h2 className="font-value tracking-[0.25em] text-[#ffcc57]">
@@ -205,7 +205,7 @@ export default function App() {
                 Skip to Final →
               </button>
             </div>
-            <div className="board-scroll">
+            <div className="board-scroll flex-1 min-h-0">
               <Board board={board} round={round} usedIds={usedIds} onPick={(c) => { setActiveClue(c); }} />
             </div>
           </div>
