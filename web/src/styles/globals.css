@@ -38,7 +38,8 @@ body {
     conic-gradient(from 200deg at calc(12% + var(--px) * 34px) calc(90% + var(--py) * 22px), transparent 0deg, #3340ff0a 34deg, transparent 72deg),
     conic-gradient(from 20deg at calc(90% + var(--px) * -30px) calc(8% + var(--py) * 20px), transparent 0deg, #ffcc570a 30deg, transparent 66deg);
 }
-.grain > * { position: relative; z-index: 1; }
+.grain > header { position: sticky; z-index: 40; }
+.grain > main { position: relative; z-index: 1; }
 
 .font-display { font-family: Bitter, Georgia, serif; }
 .font-value { font-family: Oswald, Impact, sans-serif; }
