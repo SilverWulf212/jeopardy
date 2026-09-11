@@ -79,6 +79,7 @@ export default function App() {
       setFinalRevealed(false);
       setWagers({});
       sfx.final();
+      try { window.scrollTo({ top: 0 }); } catch {}
     } catch (e) {
       alert("Could not load board — is the API + DB running?");
     }

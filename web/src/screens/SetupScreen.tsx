@@ -112,14 +112,16 @@ export function SetupScreen({ players, setPlayers, boards, boardId, setBoardId, 
             ))}
             {!boards.length && <div className="text-white/50 text-sm">No boards yet — create questions in Manage, or wait for seed data.</div>}
           </div>
-          <button
-            onClick={onStart}
-            disabled={!boardId}
-            className="mt-5 w-full py-3 rounded-xl bg-[#ffcc57] text-black font-value font-bold text-xl tracking-widest disabled:opacity-40"
-            data-testid="start-game"
-          >
-            START GAME →
-          </button>
+          <div className="sticky bottom-3 mt-5 rounded-xl bg-[#01022b]/90 backdrop-blur py-2">
+            <button
+              onClick={onStart}
+              disabled={!boardId}
+              className="w-full py-3 rounded-xl bg-[#ffcc57] text-black font-value font-bold text-xl tracking-widest disabled:opacity-40"
+              data-testid="start-game"
+            >
+              START GAME →
+            </button>
+          </div>
         </div>
       </div>
     </div>
