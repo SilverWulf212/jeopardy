@@ -125,7 +125,14 @@ input::placeholder, textarea::placeholder { color: #ffffff66; }
 /* Fluid board type: couch-legible on TV, compact on phones. */
 .j-tile .j-gold-text { font-size: clamp(1.05rem, 1rem + 2.6vw, 2.25rem); }
 .j-cat { overflow: hidden; }
-.j-cat span { font-size: clamp(0.6rem, 0.55rem + 1.4vw, 0.95rem); overflow-wrap: anywhere; }
+.j-cat span {
+  font-size: clamp(0.6rem, 0.55rem + 1.4vw, 0.95rem);
+  overflow-wrap: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 
 /* Small screens: tighter chrome, bottom-sheet clue modal. */
 @media (max-width: 640px) {
