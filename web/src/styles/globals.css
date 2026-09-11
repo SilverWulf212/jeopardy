@@ -139,6 +139,8 @@ input::placeholder, textarea::placeholder { color: #ffffff66; }
   .j-tile .j-gold-text { font-size: 1rem; }
   .j-cat span { font-size: 0.58rem; line-height: 1.15; }
   .j-cat { min-height: 60px; }
+  .board-scroll { overflow-x: auto; scroll-snap-type: x proximity; margin: 0 -1rem; padding: 0 1rem 0.5rem; }
+  .board-scroll > div { min-width: 620px; }
   [data-testid="clue-modal"] { align-items: flex-end !important; padding: 0 !important; }
   [data-testid="clue-modal"] > div {
     width: 100%; max-width: 100%; border-radius: 1rem 1rem 0 0;

@@ -204,7 +204,9 @@ export default function App() {
                 Skip to Final →
               </button>
             </div>
-            <Board board={board} round={round} usedIds={usedIds} onPick={(c) => { setActiveClue(c); }} />
+            <div className="board-scroll">
+              <Board board={board} round={round} usedIds={usedIds} onPick={(c) => { setActiveClue(c); }} />
+            </div>
           </div>
         ) : stage === "final" ? (
           <FinalScreen
