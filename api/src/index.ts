@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 import fs from "fs";
+import { timingSafeEqual } from "crypto";
 import { fileURLToPath } from "url";
 import { z } from "zod";
 import { pool, query } from "./db.js";
@@ -44,14 +45,20 @@ function normTags(tags: string[] | undefined): string[] {
   return [...new Set((tags ?? []).map((t) => t.trim().toLowerCase()).filter(Boolean))];
 }
 
-// Public can read/play. Writes require ADMIN_TOKEN (empty = open, dev only).
+// Public can read/play. Writes require ADMIN_TOKEN. Empty token = open ONLY outside production
+// (a missing env var must never silently expose write endpoints on a public deploy).
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN ?? "";
+const adminTokenBuf = Buffer.from(ADMIN_TOKEN);
 function requireAdmin(req: any, res: any, next: any) {
   if (!ADMIN_TOKEN) {
+    if (process.env.NODE_ENV === "production") {
+      return res.status(503).json({ error: "writes disabled: ADMIN_TOKEN is not set" });
+    }
     console.warn("[auth] ADMIN_TOKEN unset — write endpoints open (dev only)");
     return next();
   }
-  if (req.headers["x-admin-token"] === ADMIN_TOKEN) return next();
+  const given = Buffer.from(String(req.headers["x-admin-token"] ?? ""));
+  if (given.length === adminTokenBuf.length && timingSafeEqual(given, adminTokenBuf)) return next();
   res.status(401).json({ error: "admin token required" });
 }
 
@@ -233,7 +240,7 @@ app.use((err: any, _req: any, res: any, _next: any) => {
   console.error(err);
   if (err?.name === "ZodError") return res.status(400).json({ error: "validation", details: err.issues });
   if (String(err?.message ?? "").includes("duplicate")) return res.status(409).json({ error: "duplicate" });
-  res.status(500).json({ error: "internal", message: String(err?.message ?? err) });
+  res.status(500).json({ error: "internal" }); // details stay in the server log
 });
 
 const PORT = Number(process.env.PORT ?? 3001);
